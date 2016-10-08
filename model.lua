@@ -33,6 +33,7 @@ local function InitializeWeights (name)
 end
 -- Initialize used types
 InitializeWeights("nn.FastLSTM")
+InitializeWeights("nn.Linear")
 
 -- Move to GPU
 cudnn.convert(net, cudnn)
