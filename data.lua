@@ -134,8 +134,6 @@ function Data:_nextFromMap (map, batchSize, noShuffle)
       labels[{ {}, i, {} }] = label
       names[i] = name
    end
-   if not inputs:isContiguous() then inputs = inputs:clone() end
-   if not labels:isContiguous() then labels = labels:clone() end
    return {inputs = inputs, labels = labels}, names
 end   
 
