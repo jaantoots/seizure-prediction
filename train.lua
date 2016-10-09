@@ -11,8 +11,8 @@ local helpers = require 'helpers'
 local data = require 'data'
 
 -- Enable these for final training
---cudnn.benchmark = true
---cudnn.fastest = true
+cudnn.benchmark = true
+cudnn.fastest = true
 
 -- Parse arguments & load configuration
 local parser = helpers.parser()
@@ -61,10 +61,8 @@ for i = (startIteration + 1), opts.maxIterations do
       -- For optim, outputs f(X): loss and df/dx: gradients
       gradParams:zero()
       -- Forward pass
-      print('forward')
       local outputs = net:forward(inputs)
       local loss = criterion:forward(outputs, labels)
-      print(loss)
       -- Backpropagation
       local gradLoss = criterion:backward(outputs, labels)
       net:backward(inputs, gradLoss)
