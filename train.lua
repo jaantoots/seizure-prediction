@@ -18,6 +18,7 @@ cudnn.fastest = true
 local parser = helpers.parser()
 local args = parser:parse()
 local opts = helpers.opts(args)
+paths.mkdir(opts.output)
 
 -- Initialize and normalize training data
 print('==> Load data')
@@ -41,7 +42,6 @@ end
 -- Prepare output
 opts.maxIterations = args.iter and (startIteration + args.iter) or
    opts.maxIterations or (startIteration + 10000)
-paths.mkdir(opts.output)
 json.save(opts.output .. '/conf.json', opts)
 local logger = optim.Logger(opts.output .. '/accuracy.log')
 logger:setNames{'Iteration', 'Loss'}
