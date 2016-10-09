@@ -19,22 +19,23 @@ function helpers.parser ()
 end
 
 function helpers.opts (args)
-  -- Return opts for training
-  local opts
-  if paths.filep(args.conf) then
-    opts = json.load(args.conf)
-  else
-    opts = {}
-  end
-  opts.output = args.output or opts.output or
-    'out/' .. os.date('%Y-%m-%d-%H-%M-%S')
-  opts.batchSize = args.batch or opts.batchSize or 8
-  opts.config = opts.config or {
-    learningRate = 1e-2,
-    alpha = 0.99,
-    epsilon = 1e-6
-  }
-  return opts
+   -- Return opts for training
+   local opts
+   if paths.filep(args.conf) then
+      opts = json.load(args.conf)
+   else
+      opts = {}
+   end
+   opts.output = args.output or opts.output or
+      'out/' .. os.date('%Y-%m-%d-%H-%M-%S')
+   opts.batchSize = args.batch or opts.batchSize or 8
+   opts.config = opts.config or {
+      learningRate = 1e-3,
+      beta1 = 0.9,
+      beta2 = 0.999,
+      epsilon = 1e-8
+                                }
+   return opts
 end
 
 return helpers
