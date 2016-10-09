@@ -116,10 +116,11 @@ function Data:_nextFromMap (map, batchSize, noShuffle)
       -- Get sequence from map
       if self.iteration >= #map then
          -- Reshuffle
+         local shuffle
          if noShuffle then
-            local shuffle = torch.range(1, #map)
+            shuffle = torch.range(1, #map)
          else
-            local shuffle = torch.randperm(#map)
+            shuffle = torch.randperm(#map)
          end
          self.shuffle = torch.Tensor(#map)
          -- Get input indeces from map
