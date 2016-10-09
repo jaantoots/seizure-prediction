@@ -56,13 +56,15 @@ for i = (startIteration + 1), opts.maxIterations do
    local batch = trainData:nextTrain(opts.batchSize)
    local inputs = batch.inputs:cuda()
    local labels = batch.labels:cuda()
+   print(inputs:size())
+   print(labels:size())
 
    local function feval (_)
       -- For optim, outputs f(X): loss and df/dx: gradients
       gradParams:zero()
       -- Forward pass
-      print('forward')
       local outputs = net:forward(inputs)
+      print('loss')
       local loss = criterion:forward(outputs, labels)
       print(loss)
       -- Backpropagation
