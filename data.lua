@@ -21,7 +21,7 @@ function Data:__init (dir, isTrain)
    self.electrodes = self.inputs[1]['data']:size(2)
    -- Labels only when training
    if self.isTrain then
-      self._getLabels()
+      self:_getLabels()
    end
    -- Initialise stuff for returning data
    self.identity = torch.range(1, self.data)
