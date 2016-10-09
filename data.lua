@@ -87,6 +87,7 @@ function Data:normalize (mean, std)
    return self.mean, self.std
 end
 
+-- TODO: use batches!
 function Data:nextTrain (noShuffle)
    return self:_nextFromMap(self.train, noShuffle)
 end
