@@ -146,10 +146,11 @@ function Data:_getSequence ()
              expand(self.samples, self.electrodes)):
       cdiv(self.std:view(1, self.electrodes):
               expand(self.samples, self.electrodes))
+   local label
    if self.labels then
-      local label = self.labels[n]
+      label = self.labels[n]
    else
-      local label = nil
+      label = 0
    end
    return input, label, self.names[n]
 end
