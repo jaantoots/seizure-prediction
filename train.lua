@@ -30,7 +30,7 @@ opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
 -- Network and loss function
 print('==> Initialise/load model')
 local net = require 'model'
-local criterion = nn.SequencerCriterion(nn.BCECriterion())
+local criterion = nn.BCECriterion()
 criterion = criterion:cuda()
 -- Load network from file if provided
 local startIteration = 0
@@ -59,13 +59,24 @@ for i = (startIteration + 1), opts.maxIterations do
 
    local function feval (_)
       -- For optim, outputs f(X): loss and df/dx: gradients
+      net:forget()
       gradParams:zero()
       -- Forward pass
-      local outputs = net:forward(inputs)
-      local loss = criterion:forward(outputs, labels)
+      local outputs, loss = {}, 0
+      for step = 1, inputs:size(1) do
+         io.write('.')
+         outputs[step] = net:forward(inputs[step])
+         loss = loss + criterion:forward(outputs[step], labels[step])
+      end
+      print()
       -- Backpropagation
-      local gradLoss = criterion:backward(outputs, labels)
-      net:backward(inputs, gradLoss)
+      local gradOutputs, gradInputs = {}, {}
+      for step = inputs:size(1), 1, -1 do
+         io.write('.')
+         gradOutputs[step] = criterion:backward(outputs[step], labels[step])
+         gradInputs[step] = net:backward(inputs[step], gradOutputs[step])
+      end
+      print()
       -- Statistics
       return loss, gradParams
    end
