@@ -30,7 +30,7 @@ opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
 -- Network and loss function
 print('==> Initialise/load model')
 local net = require 'model'
-local criterion = nn.BCECriterion()
+local criterion = nn.SequencerCriterion(nn.BCECriterion())
 criterion = criterion:cuda()
 -- Load network from file if provided
 local startIteration = 0
