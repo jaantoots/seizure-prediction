@@ -7,6 +7,7 @@ local optim = require 'optim'
 local paths = require 'paths'
 local json = require 'json'
 
+local helpers = require 'helpers'
 local data = require 'data'
 
 -- Enable these for final training
