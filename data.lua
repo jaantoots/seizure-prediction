@@ -26,7 +26,7 @@ function Data:__init (dir, isTrain)
    -- Initialise stuff for returning data
    self.identity = torch.range(1, self.data)
    self.shuffle = nil
-   self.iteration = self.data
+   self.prevMap = nil
 end
 
 function Data:_getLabels ()
@@ -87,36 +87,57 @@ function Data:normalize (mean, std)
    return self.mean, self.std
 end
 
--- TODO: use batches!
-function Data:nextTrain (noShuffle)
-   return self:_nextFromMap(self.train, noShuffle)
+function Data:nextTrain (batchSize, noShuffle)
+   -- Return training batch
+   return self:_nextFromMap(self.train, batchSize, noShuffle)
 end
 
-function Data:nextValidate ()
-   return self:_nextFromMap(self.validate, true)
+function Data:nextValidate (batchSize)
+   -- Return validation batch
+   return self:_nextFromMap(self.validate, batchSize, true)
 end
 
-function Data:nextTest ()
-   return self._nextFromMap(self.identity, true)
+function Data:nextTest (batchSize)
+   -- Return testing batch
+   return self._nextFromMap(self.identity, batchSize, true)
 end
 
-function Data:_nextFromMap (map, noShuffle)
-   if self.iteration >= #map then
-      if noShuffle then
-         local shuffle = torch.range(1, #map)
-      else
-         local shuffle = torch.randperm(#map)
-      end
-      self.shuffle = torch.Tensor(#map)
-      for i, seq in pairs(shuffle) do
-         self.shuffle[i] = map[seq]
-      end
-      self.iteration = 0
+function Data:_nextFromMap (map, batchSize, noShuffle)
+   -- Return batch from given map
+   local inputs = torch.Tensor(self.samples, batchSize, self.electrodes)
+   local labels = torch.Tensor(self.samples, batchSize, 1)
+   local names = {}
+   -- Check that using the correct map
+   if self.prevMap ~= map then
+      self.iteration = #map
+      self.prevMap = map
    end
-   return self:_getSequence()
+   for i = 1, batchSize do
+      -- Get sequence from map
+      if self.iteration >= #map then
+         -- Reshuffle
+         if noShuffle then
+            local shuffle = torch.range(1, #map)
+         else
+            local shuffle = torch.randperm(#map)
+         end
+         self.shuffle = torch.Tensor(#map)
+         -- Get input indeces from map
+         for i, seq in pairs(shuffle) do
+            self.shuffle[i] = map[seq]
+         end
+         self.iteration = 0
+      end
+      input, label, name = self:_getSequence()
+      inputs[{ {}, i, {} }] = input
+      labels[{ {}, i, {} }] = label
+      names[i] = name
+   end
+   return {inputs = inputs, labels = labels}, names
 end   
 
 function Data:_getSequence ()
+   -- Get next (normalized) sequence
    self.iteration = self.iteration + 1
    local n = self.shuffle[self.iteration]
    local input = self.inputs[n]['data']:
@@ -129,7 +150,7 @@ function Data:_getSequence ()
    else
       local label = nil
    end
-   return {input = input, label = label}, self.names[n]
+   return input, label, self.names[n]
 end
 
 return Data

@@ -49,7 +49,7 @@ local params, gradParams = net:getParameters() -- optim requires 1D tensors
 print('==> Start training: ' .. params:nElement() .. ' parameters')
 for i = (startIteration + 1), opts.maxIterations do
    -- Get the sequence
-   local batch = trainData:nextTrain(opts.batchSize, false)
+   local batch = trainData:nextTrain(opts.batchSize)
    local inputs = batch.inputs:cuda()
    local labels = batch.labels:cuda()
 
@@ -86,7 +86,7 @@ print('==> Start validation')
 local lossValues = torch.Tensor(math.ceil(trainData.data/opts.batchSize))
 for i = 1, math.ceil(trainData.data/opts.batchSize) do
    -- Get the sequence
-   local batch = trainData:nextTrain(opts.batchSize, false)
+   local batch = trainData:nextValidate(opts.batchSize)
    local inputs = batch.inputs:cuda()
    local labels = batch.labels:cuda()
 
