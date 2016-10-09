@@ -27,7 +27,6 @@ net:add(nn.Sigmoid())
 net = nn.Sequencer(net)
 
 -- Move to GPU
-cudnn.convert(net, cudnn)
 net = net:cuda()
 
 return net
