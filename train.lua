@@ -20,10 +20,14 @@ local args = parser:parse()
 local opts = helpers.opts(args)
 
 -- Initialize and normalize training data
+print('==> Load data')
 local trainData = data.new(args.dir, true)
+trainData:splitValidate(opts.output .. '/split.dat', 0.1)
+trainData:printStats()
 opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
 
 -- Network and loss function
+print('==> Initialise/load model')
 local net = require 'model'
 local criterion = nn.BCECriterion()
 criterion = criterion:cuda()
