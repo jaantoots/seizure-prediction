@@ -17,8 +17,8 @@ function Data:__init (dir, isTrain)
    end
    -- Variables for sizes
    self.data = #self.inputs
-   self.samples = self.inputs[1]['data'].size[1]
-   self.electrodes = self.inputs[1]['data'].size[2]
+   self.samples = self.inputs[1]['data']:size(1)
+   self.electrodes = self.inputs[1]['data']:size(2)
    -- Labels only when training
    if self.isTrain then
       self._getLabels()
