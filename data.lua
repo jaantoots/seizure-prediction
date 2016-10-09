@@ -141,7 +141,7 @@ function Data:_getSequence ()
    -- Get next (normalized) sequence
    self.iteration = self.iteration + 1
    local n = self.shuffle[self.iteration]
-   local input = self.inputs[n]['data']:
+   local input = self.inputs[n]['data']:double():
       add(-self.mean:view(1, self.electrodes):
              expand(self.samples, self.electrodes)):
       cdiv(self.std:view(1, self.electrodes):
