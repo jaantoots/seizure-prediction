@@ -47,7 +47,7 @@ function Data:splitValidate (splitFile, splitRatio)
       self.validate = {}
       self.train = {}
       splitRatio = splitRatio or 0.1
-      for i, _ in pairs(self.name) do
+      for i, _ in pairs(self.names) do
          if (torch.bernoulli(splitRatio) == 1) then
             self.validate[#self.validate + 1] = i
          else
