@@ -124,8 +124,8 @@ function Data:_nextFromMap (map, batchSize, noShuffle)
          end
          self.shuffle = torch.Tensor(#map)
          -- Get input indeces from map
-         for i, seq in pairs(shuffle) do
-            self.shuffle[i] = map[seq]
+         for i = 1, shuffle:size(1) do
+            self.shuffle[i] = map[shuffle[i]]
          end
          self.iteration = 0
       end
