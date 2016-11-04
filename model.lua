@@ -7,12 +7,12 @@ local dropout = 0.5
 
 -- Convolutional layers
 -- (240000/2^7+5)/2^3
-local net = nn.Sequential()
+local cnn = nn.Sequential()
 
 -- Switch batch to first dim
-net:add(nn.Transpose({1, 2}))
+cnn:add(nn.Transpose({1, 2}))
 
-function net:ConvolutionLayer (inputFrameSize, outputFrameSize)
+function cnn:ConvolutionLayer (inputFrameSize, outputFrameSize)
    -- Pad for nice convolution (dim, pad, nInputDim)
    self:add(nn.Padding(1, 3, 2))
    -- TemporalConvolution layer with 4 kernel, stride 1
@@ -21,7 +21,7 @@ function net:ConvolutionLayer (inputFrameSize, outputFrameSize)
    self:add(nn.ReLU(true))
 end
 
-function net:DownConvolutionLayer (inputFrameSize, outputFrameSize)
+function cnn:DownConvolutionLayer (inputFrameSize, outputFrameSize)
    -- Pad for nice convolution (dim, pad, nInputDim)
    self:add(nn.Padding(1, 2, 2))
    -- TemporalConvolution layer with 4 kernel, stride 2
@@ -31,45 +31,44 @@ function net:DownConvolutionLayer (inputFrameSize, outputFrameSize)
 end
 
 -- 240000x16
-net:ConvolutionLayer(16, 64)
-net:ConvolutionLayer(64, 64)
-net:add(nn.TemporalMaxPooling(2, 2))
+cnn:ConvolutionLayer(16, 64)
+cnn:ConvolutionLayer(64, 64)
+cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 120000x64
-net:ConvolutionLayer(64, 256)
-net:ConvolutionLayer(256, 256)
-net:add(nn.TemporalMaxPooling(2, 2))
+cnn:ConvolutionLayer(64, 256)
+cnn:ConvolutionLayer(256, 256)
+cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 60000x256
-net:DownConvolutionLayer(256, 256)
-net:DownConvolutionLayer(256, 256)
-net:add(nn.Dropout(dropout))
-net:DownConvolutionLayer(256, 256)
-net:DownConvolutionLayer(256, 256)
-net:add(nn.Dropout(dropout))
-net:DownConvolutionLayer(256, 256)
+cnn:DownConvolutionLayer(256, 256)
+cnn:DownConvolutionLayer(256, 256)
+cnn:add(nn.Dropout(dropout))
+cnn:DownConvolutionLayer(256, 256)
+cnn:DownConvolutionLayer(256, 256)
+cnn:add(nn.Dropout(dropout))
+cnn:DownConvolutionLayer(256, 256)
 -- 1875x256
-net:add(nn.Padding(1, 5, 2))
+cnn:add(nn.Padding(1, 5, 2))
 -- 1880x256
-net:DownConvolutionLayer(256, 256)
-net:add(nn.Dropout(dropout))
-net:DownConvolutionLayer(256, 256)
-net:DownConvolutionLayer(256, 256)
-net:add(nn.Dropout(dropout))
+cnn:DownConvolutionLayer(256, 256)
+cnn:add(nn.Dropout(dropout))
+cnn:DownConvolutionLayer(256, 256)
+cnn:DownConvolutionLayer(256, 256)
+cnn:add(nn.Dropout(dropout))
 -- 235x256
 
 -- Switch batch to second dim
-net:add(nn.Transpose({1, 2}))
+cnn:add(nn.Transpose({1, 2}))
 
 -- Weights initialization for convolutional layers
-for _, module in pairs(net:findModules("nn.TemporalConvolution")) do
+for _, module in pairs(cnn:findModules("nn.TemporalConvolution")) do
    -- see arXiv:1502.01852 [cs.CV]
    local n = module.kW * module.outputFrameSize
    module.weight:normal(0, math.sqrt(2/n))
    module.bias:zero()
 end
 
--- Move to GPU
-cudnn.convert(net, cudnn)
-net = net:cuda()
+-- Convert to cudnn
+cudnn.convert(cnn, cudnn)
 
 -- Recurrent layers
 local rnn = nn.Sequential()
@@ -92,7 +91,12 @@ rnn:add(nn.Sigmoid())
 
 rnn = nn.Sequencer(rnn)
 
--- Move to GPU
-rnn = rnn:cuda()
+-- Combine the networks
+local net = nn.Sequential()
+net:add(cnn)
+net:add(rnn)
 
-return {net, rnn}
+-- Move to GPU
+net = net:cuda()
+
+return net
