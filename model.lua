@@ -17,8 +17,6 @@ function net:ConvolutionLayer (inputFrameSize, outputFrameSize)
    self:add(nn.Padding(1, 3, 2))
    -- TemporalConvolution layer with 4 kernel, stride 1
    self:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 1))
-   -- Batch normalization with default arguments
-   self:add(nn.BatchNormalization(outputFrameSize))
    -- ReLU activation
    self:add(nn.ReLU(true))
 end
@@ -28,8 +26,6 @@ function net:DownConvolutionLayer (inputFrameSize, outputFrameSize)
    self:add(nn.Padding(1, 2, 2))
    -- TemporalConvolution layer with 4 kernel, stride 2
    self:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 2))
-   -- Batch normalization with default arguments
-   self:add(nn.BatchNormalization(outputFrameSize))
    -- ReLU activation
    self:add(nn.ReLU(true))
 end
