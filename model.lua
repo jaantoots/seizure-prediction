@@ -99,4 +99,4 @@ rnn = nn.Sequencer(rnn)
 -- Move to GPU
 rnn = rnn:cuda()
 
-return net, rnn
+return {net, rnn}
