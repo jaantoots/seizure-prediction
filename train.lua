@@ -29,7 +29,7 @@ opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
 
 -- Network and loss function
 print('==> Initialise/load model')
-local net = require 'model'
+local net, rnn = require 'model'
 local criterion = nn.SequencerCriterion(nn.BCECriterion())
 criterion = criterion:cuda()
 -- Load network from file if provided
@@ -49,7 +49,12 @@ local lossWindow = torch.Tensor(10):zero()
 
 -- Train the network
 net:training()
-local params, gradParams = net:getParameters() -- optim requires 1D tensors
+  -- optim requires 1D tensors
+local cParams, cGradParams = net:getParameters()
+local rParams, rGradParams = rnn:getParameters()
+local params = torch.cat(cParams, rParams)
+local gradParams = torch.cat(cGradParams, rGradParams)
+
 print('==> Start training: ' .. params:nElement() .. ' parameters')
 for i = (startIteration + 1), opts.maxIterations do
    -- Get the sequence
@@ -61,11 +66,13 @@ for i = (startIteration + 1), opts.maxIterations do
       -- For optim, outputs f(X): loss and df/dx: gradients
       gradParams:zero()
       -- Forward pass
-      local outputs = net:forward(inputs)
+      local convolutions = net:forward(inputs)
+      local outputs = rnn:forward(convolutions)
       local loss = criterion:forward(outputs, labels)
       -- Backpropagation
       local gradLoss = criterion:backward(outputs, labels)
-      net:backward(inputs, gradLoss)
+      local gradOutputs = rnn:backward(convolutions, gradLoss)
+      net:backward(inputs, gradOutputs)
       -- Statistics
       return loss, gradParams
    end
@@ -95,7 +102,8 @@ for i = 1, math.ceil(trainData.data/opts.batchSize) do
    local labels = batch.labels:cuda()
 
    -- Forward through the network
-   local outputs = net:forward(inputs)
+   local convolutions = net:forward(inputs)
+   local outputs = rnn:forward(convolutions)
    local loss = criterion:forward(outputs, labels)
    lossValues[i] = loss
 end
