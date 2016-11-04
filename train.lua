@@ -26,6 +26,8 @@ local trainData = data.new(args.dir, true)
 trainData:splitValidate(opts.output .. '/split.dat', 0.1)
 trainData:printStats()
 opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
+opts.mean = opts.mean:totable()
+opts.std = opts.std:totable()
 
 -- Network and loss function
 print('==> Initialise/load model')

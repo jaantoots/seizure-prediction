@@ -75,14 +75,14 @@ function Data:normalize (mean, std)
       local means = torch.Tensor(self.data, self.electrodes)
       local stds = torch.Tensor(self.data, self.electrodes)
       for i, input in pairs(self.inputs) do
-         means[i] = input['data']:mean(1)
-         stds[i] = input['data']:std(1)
+         means[i] = input['data']:mean(1):squeeze()
+         stds[i] = input['data']:std(1):squeeze()
       end
-      self.mean = means:mean(1)
-      self.std = stds:std(1)
+      self.mean = means:mean(1):squeeze()
+      self.std = stds:std(1):squeeze()
    else
-      self.mean = mean
-      self.std = std
+      self.mean = torch.Tensor(mean)
+      self.std = torch.Tensor(std)
    end
    return self.mean, self.std
 end
