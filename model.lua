@@ -12,47 +12,47 @@ local cnn = nn.Sequential()
 -- Switch batch to first dim
 cnn:add(nn.Transpose({1, 2}))
 
-function cnn:ConvolutionLayer (inputFrameSize, outputFrameSize)
+function ConvolutionLayer (inputFrameSize, outputFrameSize)
    -- Pad for nice convolution (dim, pad, nInputDim)
-   self:add(nn.Padding(1, 3, 2))
+   cnn:add(nn.Padding(1, 3, 2))
    -- TemporalConvolution layer with 4 kernel, stride 1
-   self:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 1))
+   cnn:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 1))
    -- ReLU activation
-   self:add(nn.ReLU(true))
+   cnn:add(nn.ReLU(true))
 end
 
-function cnn:DownConvolutionLayer (inputFrameSize, outputFrameSize)
+function DownConvolutionLayer (inputFrameSize, outputFrameSize)
    -- Pad for nice convolution (dim, pad, nInputDim)
-   self:add(nn.Padding(1, 2, 2))
+   cnn:add(nn.Padding(1, 2, 2))
    -- TemporalConvolution layer with 4 kernel, stride 2
-   self:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 2))
+   cnn:add(nn.TemporalConvolution(inputFrameSize, outputFrameSize, 4, 2))
    -- ReLU activation
-   self:add(nn.ReLU(true))
+   cnn:add(nn.ReLU(true))
 end
 
 -- 240000x16
-cnn:ConvolutionLayer(16, 64)
-cnn:ConvolutionLayer(64, 64)
+ConvolutionLayer(16, 64)
+ConvolutionLayer(64, 64)
 cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 120000x64
-cnn:ConvolutionLayer(64, 256)
-cnn:ConvolutionLayer(256, 256)
+ConvolutionLayer(64, 256)
+ConvolutionLayer(256, 256)
 cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 60000x256
-cnn:DownConvolutionLayer(256, 256)
-cnn:DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
 cnn:add(nn.Dropout(dropout))
-cnn:DownConvolutionLayer(256, 256)
-cnn:DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
 cnn:add(nn.Dropout(dropout))
-cnn:DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
 -- 1875x256
 cnn:add(nn.Padding(1, 5, 2))
 -- 1880x256
-cnn:DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
 cnn:add(nn.Dropout(dropout))
-cnn:DownConvolutionLayer(256, 256)
-cnn:DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
+DownConvolutionLayer(256, 256)
 cnn:add(nn.Dropout(dropout))
 -- 235x256
 
