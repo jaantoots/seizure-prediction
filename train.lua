@@ -52,7 +52,7 @@ local lossWindow = torch.Tensor(10):zero()
 
 -- Debugging info
 local predictions = optim.Logger(opts.output .. '/prediction.log')
-logger:setNames{'Label', 'Prediction'}
+predictions:setNames{'Label', 'Prediction'}
 
 -- Train the network
 net:training()
@@ -76,7 +76,7 @@ for i = (startIteration + 1), opts.maxIterations do
       net:backward(inputs, gradLoss)
       -- Log predictions
       for j = 1, opts.batchSize do
-         logger:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
+         predictions:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
       end
       -- Statistics
       return loss, gradParams
