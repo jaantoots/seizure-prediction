@@ -74,6 +74,10 @@ for i = (startIteration + 1), opts.maxIterations do
       -- Backpropagation
       local gradLoss = criterion:backward(outputs, labels)
       net:backward(inputs, gradLoss)
+      -- Log predictions
+      for j = 1, opts.batchSize do
+         logger:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
+      end
       -- Statistics
       return loss, gradParams
    end
@@ -84,10 +88,6 @@ for i = (startIteration + 1), opts.maxIterations do
    if i >= 10 then
       print(i, lossWindow:mean())
       logger:add{i, lossWindow:mean()}
-   end
-   -- Log predictions
-   for j = 1, opts.batchSize do
-      logger:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
    end
    -- Save model
    if math.fmod(i, 100) == 0 then
