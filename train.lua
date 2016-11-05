@@ -7,6 +7,7 @@ local optim = require 'optim'
 local paths = require 'paths'
 local json = require 'json'
 
+local metrics = require 'metrics'
 local helpers = require 'helpers'
 local data = require 'data'
 
@@ -99,6 +100,7 @@ end
 net:evaluate()
 print('==> Start validation')
 local lossValues = torch.Tensor(math.ceil(trainData.data/opts.batchSize))
+local predValues = torch.Tensor(math.ceil(trainData.data/opts.batchSize)*opts.batchSize, 2)
 for i = 1, math.ceil(trainData.data/opts.batchSize) do
    -- Get the sequence
    local batch = trainData:nextValidate(opts.batchSize)
@@ -109,5 +111,9 @@ for i = 1, math.ceil(trainData.data/opts.batchSize) do
    local outputs = net:forward(inputs)
    local loss = criterion:forward(outputs, labels)
    lossValues[i] = loss
+   predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, {}}] = torch.Tensor({outputs, labels})
 end
 print(lossValues:mean())
+rocPoints = metrics.roc.points(predValues[{ {}, 1 }], predValues[{ {}, 2 }], 0, 1)
+area = metrics.roc.area(rocPoints)
+print(area)
