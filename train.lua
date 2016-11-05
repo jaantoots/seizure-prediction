@@ -111,8 +111,10 @@ for i = 1, math.ceil(trainData.data/opts.batchSize) do
    local outputs = net:forward(inputs)
    local loss = criterion:forward(outputs, labels)
    lossValues[i] = loss
-   predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 1}] = outputs:double()
-   predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 2}] = labels:double()
+   predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 1}] =
+      outputs[1]:squeeze():double()
+   predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 2}] =
+      labels[1]:squeeze():double()
 end
 print(lossValues:mean())
 rocPoints = metrics.roc.points(predValues[{ {}, 1 }], predValues[{ {}, 2 }], 0, 1)
