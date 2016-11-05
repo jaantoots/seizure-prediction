@@ -32,6 +32,13 @@ install_cuda() {
     sudo apt-get update
     sudo apt-get upgrade -y
 
+    # Clean up
+    if [ ! -d install ]; then
+        mkdir install
+    fi
+    rm -rf cuda/
+    mv cud* install/
+
     echo "Continue after reboot..." >&2
     sudo reboot
 }
@@ -42,13 +49,16 @@ hash nvidia-smi >/dev/null 2>&1 || install_cuda
 nvidia-smi
 
 # Install Torch
-sudo apt-get install git htop
+sudo apt-get install git
 git clone https://github.com/torch/distro.git ~/torch --recursive
 cd ~/torch || exit 1
 bash install-deps
 ./install.sh
 . ~/.bashrc
 
-# Install MATIO
+# Install rocks
 sudo apt-get install libmatio2
 luarocks install matio
+luarocks install argparse
+luarocks install json
+luarocks install rnn
