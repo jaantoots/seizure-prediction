@@ -89,7 +89,7 @@ for i = (startIteration + 1), opts.maxIterations do
       logger:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
    end
    -- Save model
-   if math.fmod(i, 1000) == 0 then
+   if math.fmod(i, 100) == 0 then
       net:clearState()
       torch.save(opts.output .. '/model_' .. i .. '.t7', net)
    end
