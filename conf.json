@@ -1,7 +1,7 @@
 {
-    "batchSize": 8,
+    "batchSize": 5,
     "config": {
-        "learningRate": 0.001,
+        "learningRate": 1e-4,
         "beta1": 0.9,
         "beta2": 0.999,
         "epsilon": 1e-08
