@@ -31,29 +31,47 @@ function DownConvolutionLayer (inputFrameSize, outputFrameSize)
 end
 
 -- 240000x16
-ConvolutionLayer(16, 64)
-ConvolutionLayer(64, 64)
+ConvolutionLayer(16, 32)
+ConvolutionLayer(32, 32)
 cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 120000x64
-ConvolutionLayer(64, 256)
-ConvolutionLayer(256, 256)
+ConvolutionLayer(32, 32)
+ConvolutionLayer(32, 32)
 cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 60000x256
-DownConvolutionLayer(256, 256)
-DownConvolutionLayer(256, 256)
-cnn:add(nn.Dropout(dropout))
-DownConvolutionLayer(256, 256)
-DownConvolutionLayer(256, 256)
-cnn:add(nn.Dropout(dropout))
-DownConvolutionLayer(256, 256)
+ConvolutionLayer(32, 64)
+ConvolutionLayer(64, 64)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 30000x256
+ConvolutionLayer(64, 64)
+ConvolutionLayer(64, 64)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 15000x256
+ConvolutionLayer(64, 128)
+ConvolutionLayer(128, 128)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 7500x256
+ConvolutionLayer(128, 128)
+ConvolutionLayer(128, 128)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 3750x256
+ConvolutionLayer(128, 256)
+ConvolutionLayer(256, 256)
+cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 1875x256
 cnn:add(nn.Padding(1, 5, 2))
 -- 1880x256
-DownConvolutionLayer(256, 256)
-cnn:add(nn.Dropout(dropout))
-DownConvolutionLayer(256, 256)
-DownConvolutionLayer(256, 256)
-cnn:add(nn.Dropout(dropout))
+ConvolutionLayer(256, 256)
+ConvolutionLayer(256, 256)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 940x256
+ConvolutionLayer(256, 256)
+ConvolutionLayer(256, 256)
+cnn:add(nn.TemporalMaxPooling(2, 2))
+-- 470x256
+ConvolutionLayer(256, 256)
+ConvolutionLayer(256, 256)
+cnn:add(nn.TemporalMaxPooling(2, 2))
 -- 235x256
 
 -- Switch batch to second dim
