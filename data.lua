@@ -104,8 +104,8 @@ end
 
 function Data:_nextFromMap (map, batchSize, noShuffle)
    -- Return batch from given map
-   local inputs = torch.Tensor(self.samples, batchSize, self.electrodes)
-   local labels = torch.Tensor((self.samples/2^7 + 5)/2^3, batchSize, 1)
+   local inputs = torch.Tensor(batchSize, self.samples, self.electrodes)
+   local labels = torch.Tensor(batchSize, 1)
    local names = {}
    -- Check that using the correct map
    if self.prevMap ~= map then
@@ -130,8 +130,8 @@ function Data:_nextFromMap (map, batchSize, noShuffle)
          self.iteration = 0
       end
       input, label, name = self:_getSequence()
-      inputs[{ {}, i, {} }] = input
-      labels[{ {}, i, {} }] = label
+      inputs[{ i, {}, {} }] = input
+      labels[{ i, {} }] = label
       names[i] = name
    end
    return {inputs = inputs, labels = labels}, names

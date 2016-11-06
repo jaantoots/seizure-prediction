@@ -33,7 +33,7 @@ opts.std = opts.std:totable()
 -- Network and loss function
 print('==> Initialise/load model')
 local net = require 'model'
-local criterion = nn.SequencerCriterion(nn.BCECriterion())
+local criterion = nn.BCECriterion()
 criterion = criterion:cuda()
 -- Load network from file if provided
 local startIteration = 0
@@ -76,7 +76,7 @@ for i = (startIteration + 1), opts.maxIterations do
       net:backward(inputs, gradLoss)
       -- Log predictions
       for j = 1, opts.batchSize do
-         predictions:add{labels[{1, j, 1}], outputs[{ {}, j, 1}]:mean(1):squeeze()}
+         predictions:add{labels[j]:squeeze(), outputs[j]:squeeze()}
       end
       -- Statistics
       return loss, gradParams
@@ -112,9 +112,9 @@ for i = 1, math.ceil(trainData.data/opts.batchSize) do
    local loss = criterion:forward(outputs, labels)
    lossValues[i] = loss
    predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 1}] =
-      outputs[1]:squeeze():double()
+      outputs:squeeze():double()
    predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 2}] =
-      labels[1]:squeeze():double()
+      labels:squeeze():double()
 end
 print(lossValues:mean())
 rocPoints = metrics.roc.points(predValues[{ {}, 1 }], predValues[{ {}, 2 }], 0, 1)
