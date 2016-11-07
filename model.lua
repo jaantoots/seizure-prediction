@@ -65,7 +65,9 @@ cnn:add(nn.TemporalMaxPooling(4, 4))
 -- 1
 cnn:add(nn.Squeeze(1, 2))
 cnn:add(nn.Linear(512, 128))
+cnn:add(nn.ReLU(true))
 cnn:add(nn.Linear(128, 32))
+cnn:add(nn.ReLU(true))
 cnn:add(nn.Linear(32, 1))
 cnn:add(nn.Sigmoid())
 
