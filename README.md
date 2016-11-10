@@ -1,14 +1,9 @@
-# Seizure prediction using a LSTM recurrent neural network
+# Seizure prediction using a convolutional neural network
 
-Previous uses of LSTM RNNs for time series classification:
+Use a convolutional neural network to classify time series data. This
+convolutional network was used after an initial idea of using an RNN
+failed to produce any good results.
 
-- [Learning to Diagnose with LSTM Recurrent Neural Networks](http://arxiv.org/abs/1511.03677)
-
-## Architecture
-
-- Input, $\mathbf{x}^{(t)}$
-- $N$ layers of LSTM RNN of 128 inputs
-- Fully connected layer
-- Output, $\mathbf{y}^{(t)}$
-- Softmax loss applied at each time step
-- Prediction from average, last, or weighted average
+This approach still suffers from a number of problems: no batch
+normalisation and possibly suboptimal initialisation. Additionally,
+the network design is _a priori_ not very promising nor scalable.
