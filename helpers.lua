@@ -15,6 +15,7 @@ function helpers.parser ()
    parser:option('-b --batch', 'Batch size.')
    parser:option('-i --iter', 'Number of iterations to train.')
    parser:option('-m --model', 'Saved model, if continuing training.')
+   parser:option('-v --validate', 'Validate the models.'):args("*")
    return parser
 end
 
