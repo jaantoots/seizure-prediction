@@ -37,7 +37,7 @@ criterion = criterion:cuda()
 
 -- Load network from file
 print('==> Start validation')
-for model in args.validate do
+for _, model in pairs(args.validate) do
    print(model)
    net = torch.load(model)
 
