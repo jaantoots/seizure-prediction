@@ -54,45 +54,47 @@ local lossWindow = torch.Tensor(10):zero()
 local predictions = optim.Logger(opts.output .. '/prediction.log')
 predictions:setNames{'Label', 'Prediction'}
 
--- Train the network
-net:training()
--- optim requires 1D tensors
-local params, gradParams = net:getParameters()
-print('==> Start training: ' .. params:nElement() .. ' parameters')
-for i = (startIteration + 1), opts.maxIterations do
-   -- Get the sequence
-   local batch = trainData:nextTrain(opts.batchSize)
-   local inputs = batch.inputs:cuda()
-   local labels = batch.labels:cuda()
+if not args.validate then
+   -- Train the network
+   net:training()
+   -- optim requires 1D tensors
+   local params, gradParams = net:getParameters()
+   print('==> Start training: ' .. params:nElement() .. ' parameters')
+   for i = (startIteration + 1), opts.maxIterations do
+      -- Get the sequence
+      local batch = trainData:nextTrain(opts.batchSize)
+      local inputs = batch.inputs:cuda()
+      local labels = batch.labels:cuda()
 
-   local function feval (_)
-      -- For optim, outputs f(X): loss and df/dx: gradients
-      gradParams:zero()
-      -- Forward pass
-      local outputs = net:forward(inputs)
-      local loss = criterion:forward(outputs, labels)
-      -- Backpropagation
-      local gradLoss = criterion:backward(outputs, labels)
-      net:backward(inputs, gradLoss)
-      -- Log predictions
-      for j = 1, opts.batchSize do
-         predictions:add{labels[j]:squeeze(), outputs[j]:squeeze()}
+      local function feval (_)
+         -- For optim, outputs f(X): loss and df/dx: gradients
+         gradParams:zero()
+         -- Forward pass
+         local outputs = net:forward(inputs)
+         local loss = criterion:forward(outputs, labels)
+         -- Backpropagation
+         local gradLoss = criterion:backward(outputs, labels)
+         net:backward(inputs, gradLoss)
+         -- Log predictions
+         for j = 1, opts.batchSize do
+            predictions:add{labels[j]:squeeze(), outputs[j]:squeeze()}
+         end
+         -- Statistics
+         return loss, gradParams
       end
-      -- Statistics
-      return loss, gradParams
-   end
-   local _, fs = optim.adam(feval, params, opts.config)
+      local _, fs = optim.adam(feval, params, opts.config)
 
-   -- Log loss
-   lossWindow[math.fmod(i, 10) + 1] = fs[1]
-   if i >= 10 then
-      print(i, lossWindow:mean())
-      logger:add{i, lossWindow:mean()}
-   end
-   -- Save model
-   if math.fmod(i, 100) == 0 then
-      net:clearState()
-      torch.save(opts.output .. '/model_' .. i .. '.t7', net)
+      -- Log loss
+      lossWindow[math.fmod(i, 10) + 1] = fs[1]
+      if i >= 10 then
+         print(i, lossWindow:mean())
+         logger:add{i, lossWindow:mean()}
+      end
+      -- Save model
+      if math.fmod(i, 100) == 0 then
+         net:clearState()
+         torch.save(opts.output .. '/model_' .. i .. '.t7', net)
+      end
    end
 end
 
