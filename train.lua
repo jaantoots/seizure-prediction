@@ -112,7 +112,7 @@ for i = 1, math.ceil(trainData.data/opts.batchSize) do
    local loss = criterion:forward(outputs, labels)
    lossValues[i] = loss
    predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 1}] =
-      outputs[1]:squeeze():double()
+      outputs[{ {}, {}, 1}]:mean(1):squeeze():double()
    predValues[{ {(i - 1)*opts.batchSize + 1, i*opts.batchSize}, 2}] =
       labels[1]:squeeze():double()
 end
