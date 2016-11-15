@@ -99,7 +99,7 @@ end
 
 function Data:nextTest (batchSize)
    -- Return testing batch
-   return self._nextFromMap(self.identity, batchSize, true)
+   return self:_nextFromMap(self.identity, batchSize, true)
 end
 
 function Data:_nextFromMap (map, batchSize, noShuffle)

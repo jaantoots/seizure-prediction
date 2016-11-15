@@ -43,7 +43,7 @@ predictions:setNames{'Name', 'Prediction'}
 
 -- Validate the network
 net:evaluate()
-print('==> Start validation')
+print('==> Start test')
 local predValues = torch.Tensor(math.ceil(testData.data/opts.batchSize)*opts.batchSize, 2)
 for i = 1, math.ceil(testData.data/opts.batchSize) do
    -- Get the sequence
