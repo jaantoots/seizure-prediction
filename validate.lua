@@ -39,7 +39,7 @@ criterion = criterion:cuda()
 print('==> Start validation')
 for _, model in pairs(args.validate) do
    print(model)
-   net = torch.load(model)
+   net = torch.load(model):cuda()
 
    -- Validate the network
    net:evaluate()

@@ -34,7 +34,7 @@ local net = require 'model'
 -- Load network from file if provided
 local startIteration = 0
 if args.model then
-   net = torch.load(args.model)
+   net = torch.load(args.model):cuda()
 end
 
 -- Predictions
