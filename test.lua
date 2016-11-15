@@ -20,11 +20,11 @@ local args = parser:parse()
 local opts = helpers.opts(args)
 paths.mkdir(opts.output)
 
--- Initialize and normalize training data
+-- Initialize and normalize data
 print('==> Load data')
 local testData = data.new(args.dir, false)
-trainData:printStats()
-opts.mean, opts.std = trainData:normalize(opts.mean, opts.std)
+testData:printStats()
+opts.mean, opts.std = testData:normalize(opts.mean, opts.std)
 opts.mean = opts.mean:totable()
 opts.std = opts.std:totable()
 
