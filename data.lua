@@ -24,7 +24,7 @@ function Data:__init (dir, isTrain)
       self:_getLabels()
    end
    -- Initialise stuff for returning data
-   self.identity = torch.range(1, self.data)
+   self.identity = torch.range(1, self.data):totable()
    self.shuffle = nil
    self.prevMap = nil
 end
