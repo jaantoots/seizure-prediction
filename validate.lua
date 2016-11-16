@@ -43,9 +43,10 @@ for _, model in pairs(args.validate) do
 
    -- Validate the network
    net:evaluate()
-   local lossValues = torch.Tensor(math.ceil(trainData.validate/opts.batchSize))
+   local lossValues = torch.Tensor(
+      math.ceil(#trainData.validate/opts.batchSize))
    local predValues = torch.Tensor(
-      math.ceil(trainData.validate/opts.batchSize)*opts.batchSize, 2)
+      math.ceil(#trainData.validate/opts.batchSize)*opts.batchSize, 2)
    for i = 1, math.ceil(trainData.data/opts.batchSize) do
       -- Get the sequence
       local batch = trainData:nextValidate(opts.batchSize)
