@@ -1,8 +1,11 @@
 # Seizure prediction using a convolutional neural network
 
-Use a convolutional neural network to classify time series data. This
-convolutional network was used after an initial idea of using an RNN
-failed to produce any good results.
+This is my solution to the
+Kaggle
+[Melbourne University AES/MathWorks/NIH Seizure Prediction](https://www.kaggle.com/c/melbourne-university-seizure-prediction) competition
+using a convolutional neural network to classify time series
+data. This convolutional network was used after an initial idea of
+using an RNN failed to produce any good results.
 
 This approach still suffers from a number of problems: no batch
 normalisation and possibly suboptimal initialisation. Additionally,
